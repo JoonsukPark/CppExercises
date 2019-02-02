@@ -5,6 +5,7 @@
 
 const int board_size = 6;
 std::array<std::array<int, board_size>, board_size> board;
+std::array<std::array<int, board_size>, board_size> board2;
 
 void init_board()
 {
@@ -62,8 +63,10 @@ void draw_board()
     return;
 }
 
-int validate_right(int input, int input_row, int input_col)
+int validate_right(std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col)
 {
+    if(input_col == board_size) return -1;
     int j = input_col;
     if(input*board[input_row-1][j] != -1) return -1;
     else
@@ -80,8 +83,10 @@ int validate_right(int input, int input_row, int input_col)
     }
 }
 
-int validate_left(int input, int input_row, int input_col)
+int validate_left(std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col)
 {
+    if(input_col == 1) return -1;
     int j = input_col-2;
     if(input*board[input_row-1][j] != -1) return -1;
     else
@@ -98,8 +103,10 @@ int validate_left(int input, int input_row, int input_col)
     }
 }
 
-int validate_up(int input, int input_row, int input_col)
+int validate_up(std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col)
 {
+    if(input_row == 1) return -1;
     int j = input_row-2;
     if(input*board[j][input_col-1] != -1) return -1;
     else
@@ -116,8 +123,10 @@ int validate_up(int input, int input_row, int input_col)
     }
 }
 
-int validate_down(int input, int input_row, int input_col)
+int validate_down(std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col)
 {
+    if(input_row == board_size) return -1;
     int j = input_row;
     if(input*board[j][input_col-1] != -1) return -1;
     else
@@ -134,8 +143,10 @@ int validate_down(int input, int input_row, int input_col)
     }
 }
 
-int validate_upperleft(int input, int input_row, int input_col)
+int validate_upperleft(std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col)
 {
+    if(input_row == 1 || input_col == 1) return -1;
     int j = input_row-2;
     int k = input_col-2;
     
@@ -157,8 +168,10 @@ int validate_upperleft(int input, int input_row, int input_col)
     }
 }
 
-int validate_upperright(int input, int input_row, int input_col)
+int validate_upperright(std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col)
 {
+    if(input_row == 1 || input_col == board_size) return -1;
     int j = input_row-2;
     int k = input_col;
     
@@ -180,8 +193,10 @@ int validate_upperright(int input, int input_row, int input_col)
     }
 }
 
-int validate_lowerleft(int input, int input_row, int input_col)
+int validate_lowerleft(std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col)
 {
+    if(input_row == board_size || input_col == 1) return -1;
     int j = input_row;
     int k = input_col-2;
     
@@ -203,8 +218,10 @@ int validate_lowerleft(int input, int input_row, int input_col)
     }
 }
 
-int validate_lowerright(int input, int input_row, int input_col)
+int validate_lowerright(std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col)
 {
+    if(input_row == board_size || input_col == board_size) return -1;
     int j = input_row;
     int k = input_col;
     
@@ -226,39 +243,53 @@ int validate_lowerright(int input, int input_row, int input_col)
     }
 }
 
-void execute_right(int input, int input_row, int input_col, int rightlim)
+std::array<std::array<int, board_size>, board_size> execute_right(
+    std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col, int rightlim)
 {
     for(int k=input_col-1; k<rightlim; k++)
     {
         board[input_row-1][k] = input;
     }
+    return board;
 }
 
-void execute_left(int input, int input_row, int input_col, int leftlim)
+std::array<std::array<int, board_size>, board_size> execute_left(
+    std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col, int leftlim)
 {
     for(int k=leftlim+1; k<input_col; k++)
     {
         board[input_row-1][k] = input;
     }
+    return board;
 }
 
-void execute_up(int input, int input_row, int input_col, int lowerlim)
+std::array<std::array<int, board_size>, board_size> execute_up(
+    std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col, int lowerlim)
 {
     for(int k=lowerlim+1; k<input_row; k++)
     {
         board[k][input_col-1] = input;
     }
+    return board;
 }
 
-void execute_down(int input, int input_row, int input_col, int upperlim)
+std::array<std::array<int, board_size>, board_size> execute_down(
+    std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col, int upperlim)
 {
     for(int k=input_row-1; k<upperlim; k++)
     {
         board[k][input_col-1] = input;
     }
+    return board;
 }
 
-void execute_upperleft(int input, int input_row, int input_col, int upperleftlim)
+std::array<std::array<int, board_size>, board_size> execute_upperleft(
+    std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col, int upperleftlim)
 {
     int j = input_col - 1;
     for(int i=input_row - 1; i > upperleftlim; i--)
@@ -266,9 +297,12 @@ void execute_upperleft(int input, int input_row, int input_col, int upperleftlim
         board[i][j] = input;
         j--;
     }
+    return board;
 }
 
-void execute_upperright(int input, int input_row, int input_col, int upperrightlim)
+std::array<std::array<int, board_size>, board_size> execute_upperright(
+    std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col, int upperrightlim)
 {
     int j = input_col - 1;
     for(int i=input_row - 1; i > upperrightlim; i--)
@@ -276,9 +310,12 @@ void execute_upperright(int input, int input_row, int input_col, int upperrightl
         board[i][j] = input;
         j++;
     }
+    return board;
 }
 
-void execute_lowerleft(int input, int input_row, int input_col, int lowerleftlim)
+std::array<std::array<int, board_size>, board_size> execute_lowerleft(
+    std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col, int lowerleftlim)
 {
     int j = input_col - 1;
     for(int i = input_row - 1; i < lowerleftlim; i++)
@@ -286,9 +323,12 @@ void execute_lowerleft(int input, int input_row, int input_col, int lowerleftlim
         board[i][j] = input;
         j--;
     }
+    return board;
 }
 
-void execute_lowerright(int input, int input_row, int input_col, int lowerrightlim)
+std::array<std::array<int, board_size>, board_size> execute_lowerright(
+    std::array<std::array<int, board_size>, board_size> &board,
+    int input, int input_row, int input_col, int lowerrightlim)
 {
     int j = input_col - 1;
     for(int i = input_row - 1; i < lowerrightlim; i++)
@@ -296,9 +336,102 @@ void execute_lowerright(int input, int input_row, int input_col, int lowerrightl
         board[i][j] = input;
         j++;
     }
+    return board;
 }
 
-int game_over()
+int validate_move(std::array<std::array<int, board_size>, board_size> &board, int move, int input_row, int input_col)
+{
+    if((board[input_row-1][input_col-1] == 0) && 
+        (validate_up(board, move, input_row, input_col) != -1 ||
+        validate_down(board, move, input_row, input_col) != -1 ||
+        validate_left(board, move, input_row, input_col) != -1 ||
+        validate_right(board, move, input_row, input_col) != -1 ||
+        validate_upperleft(board, move, input_row, input_col) != -1 ||
+        validate_upperright(board, move, input_row, input_col) != -1 ||
+        validate_lowerleft(board, move, input_row, input_col) != -1 ||
+        validate_lowerright(board, move, input_row, input_col) != -1)) return 1;
+    else return 0;
+}
+
+std::array<std::array<int, board_size>, board_size> execute_move(
+    std::array<std::array<int, board_size>, board_size> &board, int input, int input_row, int input_col)
+{
+    if(input_col != board_size)
+    {
+        int rightlim = validate_right(board, input, input_row, input_col);
+        if(rightlim != -1)
+        {
+            execute_right(board, input, input_row, input_col, rightlim);
+        }
+    }
+    
+    if(input_col != 1)
+    {
+        int leftlim = validate_left(board, input, input_row, input_col);
+        if(leftlim != -1)
+        {
+            execute_left(board, input, input_row, input_col, leftlim);
+        }
+    }
+
+    if(input_row != 1)
+    {
+        int lowerlim = validate_up(board, input, input_row, input_col);
+        if(lowerlim != -1)
+        {
+            execute_up(board, input, input_row, input_col, lowerlim);
+        }
+    }
+    
+    if(input_row != board_size)
+    {
+        int upperlim = validate_down(board, input, input_row, input_col);
+        if(upperlim != -1)
+        {
+            execute_down(board, input, input_row, input_col, upperlim);
+        }
+    }
+    
+    if(input_row != 1 && input_col != 1)
+    {
+        int upperleftlim = validate_upperleft(board, input, input_row, input_col);
+        if(upperleftlim != -1)
+        {
+            execute_upperleft(board, input, input_row, input_col, upperleftlim);
+        }
+    }
+    
+    if(input_row != 1 && input_col != board_size)
+    {
+        int upperrightlim = validate_upperright(board, input, input_row, input_col);
+        if(upperrightlim != -1)
+        {
+            execute_upperright(board, input, input_row, input_col, upperrightlim);
+        }
+    }
+
+    if(input_row != board_size && input_col != board_size)
+    {
+        int lowerrightlim = validate_lowerright(board, input, input_row, input_col);
+        if(lowerrightlim != -1)
+        {
+            execute_lowerright(board, input, input_row, input_col, lowerrightlim);
+        }
+    }
+    
+    if(input_row != board_size && input_col != 1)
+    {
+        int lowerleftlim = validate_lowerleft(board, input, input_row, input_col);
+        if(lowerleftlim != -1)
+        {
+            execute_lowerleft(board, input, input_row, input_col, lowerleftlim);
+        }
+    }
+    return board;
+}
+
+
+int game_over(std::array<std::array<int, board_size>, board_size> &board)
 {
     int zeros = 0;
     int whites = 0;
@@ -316,7 +449,7 @@ int game_over()
     else return 0;
 }
 
-std::vector<int> scores()
+std::vector<int> scores(std::array<std::array<int, board_size>, board_size> &x)
 {
     int whites = 0;
     int blacks = 0;
@@ -326,8 +459,8 @@ std::vector<int> scores()
     {
         for(int j=0; j<board_size; j++)
         {
-            if(board[i][j]==1) whites += 1;
-            else if(board[i][j]==-1) blacks += 1;
+            if(x[i][j]==1) whites += 1;
+            else if(x[i][j]==-1) blacks += 1;
         }
     }
     output[0] = whites;
@@ -337,25 +470,13 @@ std::vector<int> scores()
 
 int main()
 {
-    std::cout << std::endl << "Othello C++ version 1.0" << std::endl << std::endl;
+    std::cout << std::endl << "Othello C++ version 2.0" << std::endl << std::endl;
     
     int input_row;
     int input_col;
     
-    int rightlim;
-    int leftlim;
-    int upperlim;
-    int lowerlim;
-    
-    int upperleftlim;
-    int upperrightlim;
-    int lowerleftlim;
-    int lowerrightlim;
-    
-    int input = 1;
-    int moved = 0;
-    int passed = 0;
-    int move_possible = 0;
+    std::vector<int> nextmove_computer(2);
+    int current_gain;
     
     char playagain;
     std::vector<int> score(2);
@@ -364,41 +485,42 @@ int main()
     {
         init_board();
         draw_board();
+        
+        char first;
+        int input = 1;            
+        int moved = 0;
+        int passed = 0;
+
+        std::cout << "Will you go first (y/n)? ";
+        std::cin >> first;
+        
+        while(!std::cin)
+        {
+            std::cin.clear();
+            std::cin.ignore(1000, '\n');
+            std::cout << "Will you go first (y/n)? ";
+            std::cin >> first;
+        }
+        
+        if(first == 'Y' || first == 'y')
+        {
+            std::cout << std::endl << std::endl;
+        }
+        else
+        {
+            board = execute_move(board, input, 2, 3);
+            draw_board();
+            std::cout << "Computer's next move is (" << 0 << ',' << 0 << ")." << std::endl;
+            input *= -1;
+            score = scores(board);
+            moved = 1;
+            passed = 0;
+            std::cout << std::endl << "Score: " << score[0] << " vs " << score[1] << ". " << std::endl;    
+        }
 
         do
         {
             moved = 0;
-            move_possible = 0;
-            
-            for(int i=1; i<=board_size; i++)
-            {
-                for(int j=1; j<=board_size; j++)
-                {
-                    if(board[i-1][j-1] == 0)
-                    {
-                        if(validate_right(input, i, j) != -1 ||
-                        validate_left(input, i, j) != -1 ||
-                        validate_up(input, i, j) != -1 ||
-                        validate_down(input, i, j) != -1 ||
-                        validate_upperleft(input, i, j) != -1 ||
-                        validate_upperright(input, i, j) != -1 ||
-                        validate_lowerleft(input, i, j)  != -1 ||
-                        validate_lowerright(input, i, j)  != -1)
-                        {
-                            move_possible = 1;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            if(move_possible == 0)
-            {
-                std::cout << "There is no possible move! Passing this turn..." << std::endl;
-                passed += 1;
-                input *= -1;
-                continue;
-            }
 
             if(input == 1) std::cout << "\u25CB \'s turn!" << std::endl;
             else std::cout << "\u25CF \'s turn!" << std::endl;
@@ -406,7 +528,17 @@ int main()
             std::cout << std::endl << "Input row (0: pass, 99=quit): ";
             std::cin >> input_row;
             
+            if(!std::cin || input_row < 0 || (input_row > board_size &&
+                input_row != 99))
+            {
+                std::cout << "Not a valid input! " << std::endl;
+                std::cin.clear();
+                std::cin.ignore(1000, '\n');
+                continue;
+            }
+            
             if(input_row == 99) return 0;
+            
             else if(input_row == 0)
             {
                 passed += 1;
@@ -414,9 +546,20 @@ int main()
                 continue;
             }
             
-            std::cout << std::endl << "Input col (0: pass, 99= quit): ";
+            std::cout << std::endl << "Input col (0: pass, 99=quit): ";
             std::cin >> input_col;
+            
+            if(!std::cin || input_row < 0 || (input_row > board_size 
+                && input_row != 99))
+            {
+                std::cout << "Not a valid input! " << std::endl;
+                std::cin.clear();
+                std::cin.ignore(1000, '\n');
+                continue;
+            }
+
             if(input_col == 99) return 0;
+            
             else if(input_row == 0)
             {
                 passed += 1;
@@ -425,118 +568,79 @@ int main()
             }
             std::cout << std::endl;
             
-            if(board[input_row-1][input_col-1] != 0)
+            if(validate_move(board, input, input_row, input_col) == 1)
             {
-                std::cout << "Invalid move" << std::endl << std::endl;
-                continue;
+                execute_move(board, input, input_row, input_col);
+                moved = 0;
+                passed = 0;
+                draw_board();    
+                input *= -1;
+                score = scores(board);
+                std::cout << std::endl << "Score: " << score[0] << " vs " << score[1] << ". " << std::endl;    
             }
             
-            if(input_col != board_size)
-            {
-                rightlim = validate_right(input, input_row, input_col);
-                if(rightlim != -1)
-                {
-                    execute_right(input, input_row, input_col, rightlim);
-                    moved = 1;
-                    passed = 0;
-                }
-            }
-            
-            if(input_col != 1)
-            {
-                leftlim = validate_left(input, input_row, input_col);
-                if(leftlim != -1)
-                {
-                    execute_left(input, input_row, input_col, leftlim);
-                    moved = 1;
-                    passed = 0;
-                }
-            }
-
-            if(input_row != 1)
-            {
-                lowerlim = validate_up(input, input_row, input_col);
-                if(lowerlim != -1)
-                {
-                    execute_up(input, input_row, input_col, lowerlim);
-                    moved = 1;
-                    passed = 0;
-                }
-            }
-            
-            if(input_row != board_size)
-            {
-                upperlim = validate_down(input, input_row, input_col);
-                if(upperlim != -1)
-                {
-                    execute_down(input, input_row, input_col, upperlim);
-                    moved = 1;
-                    passed = 0;
-                }
-            }
-            
-            if(input_row != 1 && input_col != 1)
-            {
-                upperleftlim = validate_upperleft(input, input_row, input_col);
-                if(upperleftlim != -1)
-                {
-                    execute_upperleft(input, input_row, input_col, upperleftlim);
-                    moved = 1;
-                    passed = 0;
-                }
-            }
-            
-            if(input_row != 1 && input_col != board_size)
-            {
-                upperrightlim = validate_upperright(input, input_row, input_col);
-                if(upperrightlim != -1)
-                {
-                    execute_upperright(input, input_row, input_col, upperrightlim);
-                    moved = 1;
-                    passed = 0;
-                }
-            }
-
-            if(input_row != board_size && input_col != board_size)
-            {
-                lowerrightlim = validate_lowerright(input, input_row, input_col);
-                if(lowerrightlim != -1)
-                {
-                    execute_lowerright(input, input_row, input_col, lowerrightlim);
-                    moved = 1;
-                    passed = 0;
-                }
-            }
-            
-            if(input_row != board_size && input_col != 1)
-            {
-                lowerleftlim = validate_lowerleft(input, input_row, input_col);
-                if(lowerleftlim != -1)
-                {
-                    execute_lowerleft(input, input_row, input_col, lowerleftlim);
-                    moved = 1;
-                    passed = 0;
-                }
-            }
-            
-            if(moved != 1)
+            else
             {
                 std::cout << "Invalid move. " <<std::endl;
                 draw_board();
                 continue;
             }
             
-            else
+            if(game_over(board)) break;
+            
+            nextmove_computer = {-1, -1};
+            current_gain = 0;
+            
+            for(int i=1; i<=board_size; i++)
             {
-                draw_board();    
-                input *= -1;
-                score = scores();
-                std::cout << std::endl << "Score: " << score[0] << " vs " << score[1] << ". ";    
+                for(int j=1; j<=board_size; j++)
+                {
+                    board2 = board;
+                    if(validate_move(board2, input, i, j) == 1)
+                    {
+                        board2 = execute_move(board2, input, i, j);
+                        if(first == 'Y' || first == 'y')
+                        {
+                            if(scores(board2)[1]-scores(board)[1] > current_gain)
+                            {
+                                nextmove_computer = {i, j};
+                                current_gain = scores(board2)[1] - scores(board)[1];
+                            }
+                        }
+                        else
+                        {
+                            if(scores(board2)[0]-scores(board)[0] > current_gain)
+                            {
+                                nextmove_computer = {i, j};
+                                current_gain = scores(board2)[0] - scores(board)[0];
+                            }
+                        }
+                    }
+                }
             }
             
-        } while(!game_over() && passed < 2);
+            if(nextmove_computer[0] != -1)
+            {
+                board = execute_move(board, input, nextmove_computer[0], nextmove_computer[1]);
+                draw_board();
+                std::cout << "Computer's next move is (" << nextmove_computer[0] << ',' << nextmove_computer[1] << ")." << std::endl;
+                input *= -1;
+                score = scores(board);
+                moved = 1;
+                passed = 0;
+                std::cout << std::endl << "Score: " << score[0] << " vs " << score[1] << ". " << std::endl;    
+            }
+            else
+            {
+                std::cout << "Cannot make next move, passing" << std::endl;
+                input *= -1;
+                passed = 1;
+                continue;
+            }
+            
+        } while(!game_over(board) && passed < 2);
         
-        score = scores();
+        score = scores(board);
         
         if(score[0] == 0 || score[0] < score[1])
         {
@@ -548,7 +652,7 @@ int main()
         }
         else std::cout << "Draw!" << std::endl;
         
-        std::cout << std::endl << "Play again (y/n)?: " << std::endl;
+        std::cout << std::endl << "Play again (y/n)?: ";
         std::cin >> playagain;
         
     } while(playagain != 'N' && playagain != 'n');
