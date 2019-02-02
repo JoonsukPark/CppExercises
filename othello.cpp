@@ -3,7 +3,7 @@
 #include<cctype>
 #include<array>
 
-const int board_size = 6;
+const int board_size = 4;
 std::array<std::array<int, board_size>, board_size> board;
 std::array<std::array<int, board_size>, board_size> board2;
 
@@ -468,6 +468,45 @@ std::vector<int> scores(std::array<std::array<int, board_size>, board_size> &x)
     return output;
 }
 
+std::vector<int> nextmove(std::array<std::array<int, board_size>, board_size> &board,
+    int input, int first)
+{
+    
+    std::vector<int> nextmove_computer(2);
+    nextmove_computer = {-1, -1};
+    int current_gain = 0;
+    
+    for(int i=1; i<=board_size; i++)
+    {
+        for(int j=1; j<=board_size; j++)
+        {
+            board2 = board;
+            if(validate_move(board2, input, i, j) == 1)
+            {
+                board2 = execute_move(board2, input, i, j);
+                if(first == 'Y' || first == 'y')
+                {
+                    if(scores(board2)[1]-scores(board)[1] > current_gain)
+                    {
+                        nextmove_computer = {i, j};
+                        current_gain = scores(board2)[1] - scores(board)[1];
+                    }
+                }
+                else
+                {
+                    if(scores(board2)[0]-scores(board)[0] > current_gain)
+                    {
+                        nextmove_computer = {i, j};
+                        current_gain = scores(board2)[0] - scores(board)[0];
+                    }
+                }
+            }
+        }
+    }
+    return nextmove_computer;
+}
+
+
 int main()
 {
     std::cout << std::endl << "Othello C++ version 2.0" << std::endl << std::endl;
@@ -476,7 +515,6 @@ int main()
     int input_col;
     
     std::vector<int> nextmove_computer(2);
-    int current_gain;
     
     char playagain;
     std::vector<int> score(2);
@@ -488,17 +526,16 @@ int main()
         
         char first;
         int input = 1;            
-        int moved = 0;
         int passed = 0;
 
         std::cout << "Will you go first (y/n)? ";
         std::cin >> first;
         
-        while(!std::cin)
+        while(first != 'y' && first != 'Y' && first != 'n' && first != 'N')
         {
             std::cin.clear();
             std::cin.ignore(1000, '\n');
-            std::cout << "Will you go first (y/n)? ";
+            std::cout << std::endl << "Will you go first (y/n)? ";
             std::cin >> first;
         }
         
@@ -508,28 +545,26 @@ int main()
         }
         else
         {
-            board = execute_move(board, input, 2, 3);
+            nextmove_computer = nextmove(board, input, first);
+            board = execute_move(board, input, nextmove_computer[0], nextmove_computer[1]);
             draw_board();
-            std::cout << "Computer's next move is (" << 0 << ',' << 0 << ")." << std::endl;
+            std::cout << "Computer's next move is (" << nextmove_computer[0] << ',' << nextmove_computer[1] << ")." << std::endl;
             input *= -1;
             score = scores(board);
-            moved = 1;
             passed = 0;
             std::cout << std::endl << "Score: " << score[0] << " vs " << score[1] << ". " << std::endl;    
         }
 
         do
         {
-            moved = 0;
-
             if(input == 1) std::cout << "\u25CB \'s turn!" << std::endl;
             else std::cout << "\u25CF \'s turn!" << std::endl;
                 
-            std::cout << std::endl << "Input row (0: pass, 99=quit): ";
+            std::cout << std::endl << "Input row (0: pass, 99=quit, 100=play again): ";
             std::cin >> input_row;
             
             if(!std::cin || input_row < 0 || (input_row > board_size &&
-                input_row != 99))
+                input_row != 99 && input_row != 100))
             {
                 std::cout << "Not a valid input! " << std::endl;
                 std::cin.clear();
@@ -538,19 +573,37 @@ int main()
             }
             
             if(input_row == 99) return 0;
+            else if(input_row == 100) continue;
             
             else if(input_row == 0)
             {
                 passed += 1;
                 input *= -1;
+                nextmove_computer = nextmove(board, input, first);
+                if(nextmove_computer[0] != -1)
+                {
+                    board = execute_move(board, input, nextmove_computer[0], nextmove_computer[1]);
+                    draw_board();
+                    std::cout << "Computer's next move is (" << nextmove_computer[0] << ',' << nextmove_computer[1] << ")." << std::endl;
+                    input *= -1;
+                    score = scores(board);
+                    passed = 0;
+                    std::cout << std::endl << "Score: " << score[0] << " vs " << score[1] << ". " << std::endl;    
+                }
+                else
+                {
+                    std::cout << "Cannot make next move, passing" << std::endl;
+                    input *= -1;
+                    passed += 1;
+                }
                 continue;
             }
             
-            std::cout << std::endl << "Input col (0: pass, 99=quit): ";
+            std::cout << std::endl << "Input col (0: pass, 99=quit, 100=play again): ";
             std::cin >> input_col;
             
-            if(!std::cin || input_row < 0 || (input_row > board_size 
-                && input_row != 99))
+            if(!std::cin || input_col < 0 || (input_col > board_size 
+                && input_col != 99 && input_col != 100))
             {
                 std::cout << "Not a valid input! " << std::endl;
                 std::cin.clear();
@@ -559,19 +612,35 @@ int main()
             }
 
             if(input_col == 99) return 0;
+            else if(input_col == 100) continue;
             
-            else if(input_row == 0)
+            else if(input_col == 0)
             {
                 passed += 1;
                 input *= -1;
+                nextmove_computer = nextmove(board, input, first);
+                if(nextmove_computer[0] != -1)
+                {
+                    board = execute_move(board, input, nextmove_computer[0], nextmove_computer[1]);
+                    draw_board();
+                    std::cout << "Computer's next move is (" << nextmove_computer[0] << ',' << nextmove_computer[1] << ")." << std::endl;
+                    input *= -1;
+                    score = scores(board);
+                    passed = 0;
+                    std::cout << std::endl << "Score: " << score[0] << " vs " << score[1] << ". " << std::endl;    
+                }
+                else
+                {
+                    std::cout << "Cannot make next move, passing" << std::endl;
+                    input *= -1;
+                    passed = 1;
+                }
                 continue;
             }
-            std::cout << std::endl;
             
             if(validate_move(board, input, input_row, input_col) == 1)
             {
                 execute_move(board, input, input_row, input_col);
-                moved = 0;
                 passed = 0;
                 draw_board();    
                 input *= -1;
@@ -588,36 +657,7 @@ int main()
             
             if(game_over(board)) break;
             
-            nextmove_computer = {-1, -1};
-            current_gain = 0;
-            
-            for(int i=1; i<=board_size; i++)
-            {
-                for(int j=1; j<=board_size; j++)
-                {
-                    board2 = board;
-                    if(validate_move(board2, input, i, j) == 1)
-                    {
-                        board2 = execute_move(board2, input, i, j);
-                        if(first == 'Y' || first == 'y')
-                        {
-                            if(scores(board2)[1]-scores(board)[1] > current_gain)
-                            {
-                                nextmove_computer = {i, j};
-                                current_gain = scores(board2)[1] - scores(board)[1];
-                            }
-                        }
-                        else
-                        {
-                            if(scores(board2)[0]-scores(board)[0] > current_gain)
-                            {
-                                nextmove_computer = {i, j};
-                                current_gain = scores(board2)[0] - scores(board)[0];
-                            }
-                        }
-                    }
-                }
-            }
+            nextmove_computer = nextmove(board, input, first);
             
             if(nextmove_computer[0] != -1)
             {
@@ -626,7 +666,6 @@ int main()
                 std::cout << "Computer's next move is (" << nextmove_computer[0] << ',' << nextmove_computer[1] << ")." << std::endl;
                 input *= -1;
                 score = scores(board);
-                moved = 1;
                 passed = 0;
                 std::cout << std::endl << "Score: " << score[0] << " vs " << score[1] << ". " << std::endl;    
             }
@@ -638,22 +677,38 @@ int main()
                 continue;
             }
             
-        } while(!game_over(board) && passed < 2);
+        } while(!game_over(board) && passed < 2 && input_row != 100 && input_col != 100);
         
-        score = scores(board);
-        
-        if(score[0] == 0 || score[0] < score[1])
+        if(input_row != 100 && input_col != 100)
         {
-            std::cout << std::endl << "Game over! \u25CF  has won, " << "Score: \u25CB " << score[0] << " vs \u25CF " << score[1] << '.' << std::endl;    
+            score = scores(board);
+            
+            if(score[0] == 0 || score[0] < score[1])
+            {
+                std::cout << std::endl << "Game over! \u25CF  has won, " << "Score: \u25CB " << score[0] << " vs \u25CF " << score[1] << '.' << std::endl;    
+            }
+            else if(score[1] == 0 || score[0] > score[1])
+            {
+                std::cout << std::endl << "Game over! \u25CB has won, " << "Score: \u25CB " << score[0] << " vs \u25CF " << score[1] << '.' << std::endl;    
+            }
+            else std::cout << "Draw!" << std::endl;
+            
+            std::cout << std::endl << "Play again (y/n)?: ";            
+            std::cin >> playagain;
+            
+            while(playagain != 'N' && playagain != 'n' && playagain != 'y' && playagain != 'Y')
+            {
+                std::cin.clear();
+                std::cin.ignore(1000, '\n');
+                std::cout << std::endl << "Play again (y/n)?: ";
+                std::cin >> playagain;
+            }
         }
-        else if(score[1] == 0 || score[0] > score[1])
+        else 
         {
-            std::cout << std::endl << "Game over! \u25CB has won, " << "Score: \u25CB " << score[0] << " vs \u25CF " << score[1] << '.' << std::endl;    
+            std::cout << std::endl << "Clear board..." << std::endl;
+            playagain = 'y';
         }
-        else std::cout << "Draw!" << std::endl;
-        
-        std::cout << std::endl << "Play again (y/n)?: ";
-        std::cin >> playagain;
         
     } while(playagain != 'N' && playagain != 'n');
         
